@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h1>Configuration Index</h1>
+<a href="{% url 'lora_config' %}">Lora Config</a>
+<a href="{% url 'sys_config' %}">Sys Config</a>
+{% endblock content %}
