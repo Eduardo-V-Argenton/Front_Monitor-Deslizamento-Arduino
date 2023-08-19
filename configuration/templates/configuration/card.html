@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h1>Module {% module.name %}</h1>
+<table>
+    <thead>
+        <tr>
+            {% for field_name in module %}
+                <th>{{ field_name }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            {% for field_name in obj|dir %}
+                <td>{{ obj|getattr:field_name }}</td>
+            {% endfor %}
+        </tr>
+    </tbody>
+</table>
+{% endblock content %}

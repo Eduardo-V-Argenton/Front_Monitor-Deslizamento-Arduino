@@ -3,8 +3,7 @@ from django import forms
 
 
 class Module(models.Model):
-    hash=models.BinaryField(max_length=8, blank=False, unique=True)
-    name=models.CharField(max_length=255, blank=False, null=False, unique=True)
+    hash=models.BinaryField(blank=False, unique=True)
     is_enable=models.BooleanField(default=False, null=False)
     is_online=models.BooleanField(default=False, null=False)
 
@@ -13,7 +12,7 @@ class ControlModule(Module):
     check_sensors_period= models.IntegerField(default=30, blank=False, null=False)
 
 class SensorModule(Module):
-    controller=models.ForeignKey(ControlModule, related_name="controller", on_delete=models.DO_NOTHING, blank=False, null=False)
+    name=models.CharField(max_length=255, blank=False, null=False, unique=True)
     crypt_key=models.BinaryField(max_length=8, blank=False)
     timeout_sensors_read_packet = models.IntegerField(default=60, blank=False, null=False)
     timeout_config_packet = models.IntegerField(default=60, blank=False, null=False)
@@ -95,18 +94,12 @@ class LoraConfigForm(forms.ModelForm):
     wor_period = forms.ChoiceField(choices=WOR_PERIOD_CHOICES)
 
 
-class ModuleForm(forms.ModelForm):
-    class Meta:
-        model = Module
-        exclude='is_online', 'is_enable'
-
- 
 class SensorModuleForm(forms.ModelForm):
     class Meta:
         model = SensorModule
-        fields = '__all__'
+        exclude='is_online', 'is_enable'
 
 class ControlModuleForm(forms.ModelForm):
     class Meta:
         model = ControlModule
-        fields = '__all__'
+        exclude='is_online', 'is_enable'

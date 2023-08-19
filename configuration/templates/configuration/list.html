@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h1>Sensor modules</h1>
+  <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Enabled</th>
+                <th>Status</th>
+                <th>Timeout Sensors Read Packet</th>
+                <th>Timeout Config Packet</th>
+                <th>Timeout Handshake</th>
+                <th>Timeout SYN</th>
+                <th>Timeout SYNACK</th>
+                <th>Timeout ACK</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sensor_module in sensor_modules %}
+                <tr>
+                    <td>{{ sensor_module.name }}</td>
+                    <td>{{ sensor_module.is_enable }}</td>
+                    <td>{{ sensor_module.is_online }}</td>
+                    <td>{{ sensor_module.timeout_sensors_read_packet }}</td>
+                    <td>{{ sensor_module.timeout_config_packet }}</td>
+                    <td>{{ sensor_module.timeout_handshake }}</td>
+                    <td>{{ sensor_module.timeout_SYN }}</td>
+                    <td>{{ sensor_module.timeout_SYNACK }}</td>
+                    <td>{{ sensor_module.timeout_ACK }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock content %}
