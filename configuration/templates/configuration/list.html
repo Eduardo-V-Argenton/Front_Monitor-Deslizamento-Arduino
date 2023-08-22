@@ -3,34 +3,62 @@
 
 {% block content %}
 <h1>Sensor modules</h1>
-  <table>
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Enabled</th>
-                <th>Status</th>
-                <th>Timeout Sensors Read Packet</th>
-                <th>Timeout Config Packet</th>
-                <th>Timeout Handshake</th>
-                <th>Timeout SYN</th>
-                <th>Timeout SYNACK</th>
-                <th>Timeout ACK</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for sensor_module in sensor_modules %}
-                <tr>
-                    <td>{{ sensor_module.name }}</td>
-                    <td>{{ sensor_module.is_enable }}</td>
-                    <td>{{ sensor_module.is_online }}</td>
-                    <td>{{ sensor_module.timeout_sensors_read_packet }}</td>
-                    <td>{{ sensor_module.timeout_config_packet }}</td>
-                    <td>{{ sensor_module.timeout_handshake }}</td>
-                    <td>{{ sensor_module.timeout_SYN }}</td>
-                    <td>{{ sensor_module.timeout_SYNACK }}</td>
-                    <td>{{ sensor_module.timeout_ACK }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
+    <table border="1">
+        <tr>
+            <th>Name</th>
+            <th>Is Enable</th>
+            <th>Is Online</th>
+            <th>Addh</th>
+            <th>Addl</th>
+            <th>Channel</th>
+            <th>UART Parity</th>
+            <th>UART Baud Rate</th>
+            <th>Air Data Rate</th>
+            <th>Transmission Power</th>
+            <th>Wor Period</th>
+            <th>Enable RSSI Ambient Noise</th>
+            <th>Enable LBT</th>
+            <th>Enable RSSI</th>
+            <th>Enable Fixed Transmission</th>
+            <th>Power Down Lose Config</th>
+            <th>Timeout Sensors Read Packet</th>
+            <th>Timeout Config Packet</th>
+            <th>Timeout Handshake</th>
+            <th>Timeout SYN</th>
+            <th>Timeout SYNACK</th>
+            <th>Timeout ACK</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+        {% for module in modules %}
+        <tr>
+            <td>{{ module.name }}</td>
+            <td>{{ module.is_enable }}</td>
+            <td>{{ module.is_online }}</td>
+            <td>{{ module.addh }}</td>
+            <td>{{ module.addl }}</td>
+            <td>{{ module.channel }}</td>
+            <td>{{ module.uart_parity }}</td>
+            <td>{{ module.uart_baud_rate }}</td>
+            <td>{{ module.air_data_rate }}</td>
+            <td>{{ module.transmission_power }}</td>
+            <td>{{ module.wor_period }}</td>
+            <td>{{ module.enable_RSSI_ambient_noise }}</td>
+            <td>{{ module.enable_lbt }}</td>
+            <td>{{ module.enable_rssi }}</td>
+            <td>{{ module.enable_fixed_transmission }}</td>
+            <td>{{ module.power_down_lose_config }}</td>
+            <td>{{ module.timeout_sensors_read_packet }}</td>
+            <td>{{ module.timeout_config_packet }}</td>
+            <td>{{ module.timeout_handshake }}</td>
+            <td>{{ module.timeout_SYN }}</td>
+            <td>{{ module.timeout_SYNACK }}</td>
+            <td>{{ module.timeout_ACK }}</td>
+            <td><a href={% url 'edit_module' 'sensor' module.id %}>Editar</a></td>
+            <td><a href={% url 'delete_sensor' module.id %}>Deletar</a></td>
+        </tr>
+        {% endfor %}
     </table>
+</body>
+</html>
 {% endblock content %}
