@@ -15,7 +15,7 @@ def sensor_modules_list(request):
 
 @login_required(redirect_field_name='login')
 def new_module(request, module_type):
-    if module_type == "controller":
+    if module_type == "controller" and not ControlModule.objects.exists():
         form = ControlModuleForm(request.POST if request.method == 'POST' else None)
     elif module_type == "sensor":
         form = SensorModuleForm(request.POST if request.method == 'POST' else None)
@@ -25,25 +25,29 @@ def new_module(request, module_type):
         if form.is_valid():
             form.save()
             messages.success(request, 'Criação bem sucedida')
-            return redirect('sensors_list')
+            return redirect('sensors_list' if module_type =='sensor' else 'index')
     return render(request, 'configuration/form.html', {'form':form})
 
 @login_required(redirect_field_name='login')
-def edit_module(request, module_type, module_id):
-    if module_type == "controller":
-        control_module = get_object_or_404(ControlModule, id=module_id)
-        form = ControlModuleForm(request.POST if request.method == 'POST' else None, instance=control_module)
-    elif module_type == "sensor":
-        sensor_module = get_object_or_404(SensorModule, id=module_id)
-        form = SensorModuleForm(request.POST if request.method == 'POST' else None,instance=sensor_module)
-    else:
-        raise Http404("Tipo inválido")
-        
+def edit_sensor_module(request, module_id):
+    sensor_module = get_object_or_404(SensorModule, id=module_id)
+    form = SensorModuleForm(request.POST if request.method == 'POST' else None,instance=sensor_module)
     if request.method == 'POST':
         if form.is_valid():
             form.save()
             messages.success(request, 'Edição bem sucedida')
             return redirect('sensors_list')
+    return render(request, 'configuration/form.html', {'form':form})
+
+@login_required(redirect_field_name='login')
+def edit_control_module(request):
+    control_module = ControlModule.objects.first()
+    form = ControlModuleForm(request.POST if request.method == 'POST' else None, instance=control_module)
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Edição bem sucedida')
+            return redirect('index')
     return render(request, 'configuration/form.html', {'form':form})
 
 @login_required(redirect_field_name='login')
