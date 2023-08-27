@@ -24,6 +24,7 @@ urlpatterns = [
     path('', include('home.urls')),
     path('configuration/', include('configuration.urls')),
     path('accounts/', include('accounts.urls')),
+    path('communication/', include('communication.urls')),
 ]
 
 if settings.DEBUG:

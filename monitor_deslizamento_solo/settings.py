@@ -26,7 +26,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '137.184.241.20']
+ALLOWED_HOSTS = ['localhost', '137.184.241.20', '192.168.1.108']
 
 
 # Application definition
@@ -40,7 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'home',
     'configuration',
-    'accounts'
+    'accounts',
+    'sensors',
+    'communication'
 ]
 
 MIDDLEWARE = [
@@ -142,3 +144,5 @@ MESSAGE_TAGS = {
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8081",
 ]
+
+APPEND_SLASH = False

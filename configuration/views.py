@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import ControlModuleForm,SensorModule, ControlModule, SensorModuleForm
+from .models import ControlModuleForm,SensorModule, ControlModule, SensorModuleForm, ModuleObserver
 from django.contrib import messages
 from django.http import Http404
 
@@ -23,8 +23,10 @@ def new_module(request, module_type):
         raise Http404("Tipo inválido")
     if request.method == 'POST':
         if form.is_valid():
-            form.save()
+            module = form.save()
             messages.success(request, 'Criação bem sucedida')
+            observer = ModuleObserver(is_controller=(True if module_type=="controller" else False), module=module)
+            observer.save()
             return redirect('sensors_list' if module_type =='sensor' else 'index')
     return render(request, 'configuration/form.html', {'form':form})
 
@@ -34,8 +36,10 @@ def edit_sensor_module(request, module_id):
     form = SensorModuleForm(request.POST if request.method == 'POST' else None,instance=sensor_module)
     if request.method == 'POST':
         if form.is_valid():
-            form.save()
+            module = form.save()
             messages.success(request, 'Edição bem sucedida')
+            observer = ModuleObserver(is_controller=False, module=module)
+            observer.save()
             return redirect('sensors_list')
     return render(request, 'configuration/form.html', {'form':form})
 
@@ -45,8 +49,10 @@ def edit_control_module(request):
     form = ControlModuleForm(request.POST if request.method == 'POST' else None, instance=control_module)
     if request.method == 'POST':
         if form.is_valid():
-            form.save()
+            module = form.save()
             messages.success(request, 'Edição bem sucedida')
+            observer = ModuleObserver(is_controller=True, module=module)
+            observer.save()
             return redirect('index')
     return render(request, 'configuration/form.html', {'form':form})
 
