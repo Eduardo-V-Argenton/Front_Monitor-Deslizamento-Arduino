@@ -6,7 +6,6 @@ class Module(models.Model):
     addh=models.IntegerField(default=0, blank=False, null=False)
     addl=models.IntegerField(default=0, blank=False, null=False)
     transmission_power=models.CharField(max_length=1, default='0', blank=False, null=False)
-    enable_power_down_lose_config=models.BooleanField(default=False, blank=False, null=False)
     enable_lbt=models.BooleanField(default=False, blank=False, null=False)
     
     fields_command = []
@@ -26,8 +25,7 @@ class ControlModule(Module):
     read_command_period= models.IntegerField(default=3, blank=False, null=False)
 
     fields_command = [
-        'addh','addl','transmission_power','enable_lbt', 'enable_power_down_lose_config', 
-        'read_command_period'
+        'addh','addl','transmission_power','enable_lbt','read_command_period'
     ]
 class SensorModule(Module):
     is_enable=models.BooleanField(default=False, null=False)
@@ -48,10 +46,10 @@ class SensorModule(Module):
     auto_send_sensors_period= models.FloatField(default=10, blank=False, null=False)
 
     fields_command = [
-        'id','addh','addl','transmission_power','enable_lbt', 'enable_power_down_lose_config', 
-        'channel', 'wor_period', 'air_data_rate', 'crypth', 'cryptl',
-        'timeout_sensors_read_packet','timeout_config_packet','timeout_sensors_read_packet','timeout_handshake','timeout_SYN',
-        'timeout_SYNACK','timeout_ACK'
+        'id','addh','addl','transmission_power','enable_lbt', 'channel', 
+        'wor_period', 'air_data_rate', 'crypth', 'cryptl','timeout_sensors_read_packet',
+        'timeout_config_packet','timeout_sensors_read_packet','timeout_handshake','timeout_SYN','timeout_SYNACK',
+        'timeout_ACK'
     ]
     
 class ModuleObserver(models.Model):
