@@ -48,7 +48,7 @@ class SensorModule(Module):
     auto_send_sensors_period= models.FloatField(default=10, blank=False, null=False)
 
     fields_command = [
-        'addh','addl','transmission_power','enable_lbt', 'enable_power_down_lose_config', 
+        'id','addh','addl','transmission_power','enable_lbt', 'enable_power_down_lose_config', 
         'channel', 'wor_period', 'air_data_rate', 'crypth', 'cryptl',
         'timeout_sensors_read_packet','timeout_config_packet','timeout_sensors_read_packet','timeout_handshake','timeout_SYN',
         'timeout_SYNACK','timeout_ACK'
@@ -58,14 +58,15 @@ class ModuleObserver(models.Model):
     timestamp=models.DateTimeField(auto_now_add=True)   
     is_controller=models.BooleanField(default=False, blank=False,null=False)
     module=models.ForeignKey(to=Module, related_name="fk_module", on_delete=models.SET("ERASED"))
-    sent=models.BooleanField(default=False)
+    executed=models.BooleanField(default=False)
+
 
     def calculate_crc16(self,data):
         crc = 0xFFFF
         polynomial = 0x1021
 
         for char in data:
-            byte = ord(char)  # Convert character to ASCII/Unicode value
+            byte = ord(char)  
             crc ^= (byte << 8)
             for _ in range(8):
                 if crc & 0x8000:
@@ -76,17 +77,16 @@ class ModuleObserver(models.Model):
         
         return crc
 
-    def print_command(self):
-        if(self.sent == 0):
+    def print_command(self, read_sensors=False):
+        if(self.executed == 0):
             if(self.is_controller):
                 module = ControlModule.objects.get(id=self.module.id)
             else:
                 module = SensorModule.objects.get(id=self.module.id)
             module = module.print_module()
-            message = '0;'+str(int(self.is_controller))+';'+module
+            message = ('2 ' if read_sensors else (str(int(self.is_controller))))+';'+module
             crc = self.calculate_crc16(message)
-            message = message+';'+str(int(crc))
-            return message
+            return message+';'+str(int(crc))
         return ''
 
 class ModuleForm(forms.ModelForm):
@@ -96,12 +96,12 @@ class ModuleForm(forms.ModelForm):
 
         
     AIR_DATA_RATE_CHOICES = [
-        ('0', '2.4k'),
-        ('1', '4.8k'),
-        ('2', '9.6k'),
-        ('3', '19.2k'),
-        ('4', '38.4k'),
-        ('5', '62.5k'),
+        ('2', '2.4k'),
+        ('3', '4.8k'),
+        ('4', '9.6k'),
+        ('5', '19.2k'),
+        ('6', '38.4k'),
+        ('7', '62.5k'),
     ]
     
     TRANSMISSION_POWER_CHOICES = [
