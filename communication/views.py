@@ -23,10 +23,10 @@ def get_response(request):
         response = request.POST.get('response')
         observer = ModuleObserver.objects.filter(executed=False).order_by("-timestamp").first()
         if observer:
-            if response == '1':
+            if int(response) > 0:
                 observer.executed = True
                 observer.save()
-            elif response == '-1':
+            elif int(response) <= 0:
                 messages.error(request, 'Ocorreu um erro')
     return redirect('index')
 
