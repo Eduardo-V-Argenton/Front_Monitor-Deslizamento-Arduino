@@ -56,7 +56,7 @@ class ControlModule(Module):
         'addh','addl','transmission_power','enable_lbt','read_command_period'
     ]
 
-    def print_command(self):
+    def print_config_command(self):
         command = self.print_module()
         message = '1'+';'+command
         crc = self.calculate_crc16(message)
@@ -76,10 +76,11 @@ class SensorModule(Module):
     #System
     timeout_sensors_read_packet = models.FloatField(default=60, blank=False, null=False)
     timeout_config_packet = models.FloatField(default=60, blank=False, null=False)
-    timeout_handshake = models.FloatField(default=60, blank=False, null=False)
-    timeout_SYNACK = models.FloatField(default=20, blank=False, null=False)
-    timeout_ACK = models.FloatField(default=20, blank=False, null=False)
-    auto_send_sensors_period= models.FloatField(default=10, blank=False, null=False)
+    timeout_handshake = models.FloatField(default=30, blank=False, null=False)
+    timeout_SYNACK = models.FloatField(default=3, blank=False, null=False)
+    timeout_ACK = models.FloatField(default=3, blank=False, null=False)
+    auto_send_sensors_period= models.IntegerField(default=10, blank=False, null=False)
+    next_sensors_read = models.DateTimeField(auto_now_add=True)
 
     fields_command = [
         'addh','addl','transmission_power','enable_lbt', 'channel', 
@@ -87,7 +88,13 @@ class SensorModule(Module):
         'timeout_sensors_read_packet','timeout_handshake','timeout_SYNACK','timeout_ACK'
     ]
 
-    def print_command(self):
+    def print_sensors_read_command(self):
+        command = self.print_module()
+        message = '2'+';'+command
+        crc = self.calculate_crc16(message)
+        return message+';'+str(int(crc))
+
+    def print_config_command(self):
         history = self.history.first()
         history = history.prev_record
         if history:
@@ -99,9 +106,8 @@ class SensorModule(Module):
         crc = self.calculate_crc16(message)
         return message+';'+str(int(crc))
 
-
 class ModuleObserver(models.Model):
-    timestamp=models.DateTimeField(auto_now_add=True)   
+    date=models.DateTimeField(auto_now_add=True)   
     is_controller=models.BooleanField(default=False, blank=False,null=False)
     module=models.ForeignKey(to=Module, related_name="fk_module", on_delete=models.CASCADE)
     executed=models.BooleanField(default=False)
@@ -111,7 +117,7 @@ class ModuleObserver(models.Model):
             module = ControlModule.objects.get(id=self.module.id)
         else:
             module = SensorModule.objects.get(id=self.module.id)
-        return module.print_command()
+        return module.print_config_command()
 
 
 class ModuleForm(forms.ModelForm):
@@ -155,7 +161,7 @@ class ModuleForm(forms.ModelForm):
 class SensorModuleForm(ModuleForm):
     class Meta:
         model = SensorModule
-        exclude= 'is_enable','history' 
+        exclude= 'is_enable','history', 'next_sensors_read', 
 
 
 class ControlModuleForm(ModuleForm):
