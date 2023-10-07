@@ -2,7 +2,66 @@
 {% load static %}
 
 {% block content %}
-<h1>Configuration Index</h1>
-<h2><a href="{% url 'sensors_list' %}">Listar Sensores</a><br></h2>
-<h2><a href={% url 'edit_control_module'%}>Editar Controlador</a></h2>
+
+<style>
+    /* Remova a barra de rolagem vertical */
+    html, body {
+        overflow-y: hidden;
+    }
+
+    /* Centralize o formulário no meio da tela */
+    .box {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0;
+    }
+
+    /* Estilize o formulário */
+    form {
+        background-color: #ededed;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 500px;
+        text-align: center;
+        margin-top: 100px;
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    /* Estilize os botões */
+    .button-container a {
+        background-color: #007bff;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 16px;
+        text-decoration: none;
+        display: block; /* Coloque os botões em blocos para que fiquem um abaixo do outro */
+        margin-bottom: 10px; /* Adicione um espaçamento entre os botões */
+    }
+
+    /* Estilize o botão quando o mouse passar por cima */
+    .button-container a:hover {
+        background-color: #0056b3;
+        text-decoration: none;
+    }
+</style>
+
+<div class="box">
+    <form>
+        <h1>Configurações</h1>
+        <div class="button-container">
+            <a href="{% url 'sensors_list' %}">Listar Sensores</a>
+            <a href="{% url 'edit_control_module' %}">Editar Controlador</a>
+        </div>
+    </form>
+</div>
+
 {% endblock content %}

@@ -1,18 +1,86 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h2>Login</h2>
-    <form method="post" action={% url 'login' %}>
-        {% csrf_token %}
-        <div class="form-group">
-            <label>Usuário</label>
-            <input type="text" name="username" value="{{request.POST.usuario}}" class="form-control"> 
-        </div>
-        <div class="form-group">
-            <label>Senha</label>
-            <input type="password" name="password" class="form-control"> 
-        </div>
-        <br/>
-        <button type="submit" class="btn btn-light">Logar</button>
-    </form>
+    <style>
+        /* Remova a barra de rolagem vertical */
+        html, body {
+            overflow-y: hidden;
+        }
+
+        /* Centralize o formulário no meio da tela */
+        .box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+        }
+
+        /* Estilize o formulário */
+        form {
+            background-color: #ededed;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 500px;
+            text-align: center;
+            margin-top: 100px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 16px;
+            box-sizing: border-box; /* Adicione esta linha */
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        /* Estilize o botão quando o mouse passar por cima */
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <div class="box">
+        
+        <form method="post" action={% url 'login' %}>
+            <h2>Login</h2>
+            {% csrf_token %}
+            <div class="form-group">
+                <label>Usuário</label>
+                <input type="text" name="username" value="{{request.POST.usuario}}" class="form-control"> 
+            </div>
+            <div class="form-group">
+                <label>Senha</label>
+                <input type="password" name="password" class="form-control"> 
+            </div>
+            <br/>
+            <button type="submit" class="btn btn-light">Logar</button>
+        </form>
+    </div>
 {% endblock %}

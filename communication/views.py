@@ -1,10 +1,12 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect, get_object_or_404
 from configuration.models import ModuleObserver, SensorModule
 from sensors.models import SensorsRead
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
 from datetime import time, timedelta
 from django.utils import timezone
+from configuration.models import SensorModule
+from .getWebWeatherInfo import get_web_weather_info  
 
 key = "6dc8a0fb"
 
@@ -16,12 +18,19 @@ def get_data(request):
         data = request.POST.get('data')
         sensors_read = data.split(';')
 
+        # ToDo ataulizar valor de periculosidade
+
+        sensor_module = get_object_or_404(SensorModule,id=sensors_read[5]);
+        weather_info = get_web_weather_info(sensor_module.city, sensor_module.country)
         instance = SensorsRead(
             accel_x=float(sensors_read[0]) if sensors_read[0] != 'nan' else 0.0,
             accel_y=float(sensors_read[1]) if sensors_read[1] != 'nan' else 0.0,
             accel_z=float(sensors_read[2]) if sensors_read[2] != 'nan' else 0.0,
             soil_moisture=int(sensors_read[3]) if sensors_read[3] != 'nan' else 0,
-            rain_sensor_value=int(sensors_read[4]) if sensors_read[4] != 'nan' else 0
+            rain_sensor_value=int(sensors_read[4]) if sensors_read[4] != 'nan' else 0,
+            sensor_module=sensor_module,
+            air_temperature= float(weather_info[1]),
+            air_humidity= float(weather_info[0])
         )
         instance.save()
     return redirect('index')

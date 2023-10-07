@@ -1,0 +1,276 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        .grid-container {
+            display: flex;
+            flex-wrap: wrap; /* Adicione flex-wrap para permitir que as caixas quebrem para a próxima linha em telas menores */
+            justify-content: center; /* Centralize horizontalmente */
+            align-items: flex-start; /* Alinhe no início verticalmente */
+            margin-top: 100px;
+        }
+
+        /* Estilize as caixas dos sensores */
+        .sensor-box {
+            background-color: #ededed;
+            padding: 10px;
+            margin: 20px;
+            border-radius: 5px;
+            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 280px; /* Aumente a largura da "box" em 20% */
+            height: 400px; /* Defina uma altura fixa para a "box" */
+            display: flex;
+            flex-direction: column; /* Alinhe o conteúdo verticalmente */
+        }
+
+        /* Aplique uma escala de 120% para o conteúdo da "box" */
+        .sensor-box * {
+            transform: scale(1);
+            transform-origin: center;
+        }
+
+        /* Estilize os títulos das informações */
+        .info-title {
+            font-weight: bold;
+            font-size: 19.2px; /* Aumente o tamanho da fonte em 20% */
+            margin-bottom: 6px; /* Aumente o espaço abaixo do título em 20% */
+        }
+
+        /* Estilize os valores das informações */
+        .info-value {
+            font-size: 16.8px; /* Aumente o tamanho da fonte em 20% */
+            margin-bottom: 12px; /* Aumente o espaço abaixo dos valores em 20% */
+        }
+
+        /* Estilize o possível risco */
+        .info-risco {
+            font-size: 14.4px; /* Aumente o tamanho da fonte em 20% */
+            color: #ff0000;
+        }
+
+        /* Estilize os gráficos */
+        .sensor-chart {
+            margin-top: auto; /* Empurre o gráfico para a parte inferior da caixa */
+        }
+
+
+        .box-button {
+            background-color: #3498db;
+            color: #ffffff;
+            font-size: 16px;
+            padding: 10px 15px; /* Largura reduzida aqui */
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100px; /* Largura reduzida aqui */
+            text-align: center; /* Centraliza o texto horizontalmente */
+            text-decoration: none; /* Remove o sublinhado padrão do link */
+      }
+   
+       .box-button:hover {
+           background-color: #2980b9;
+       }
+
+    </style>
+
+    <div class="grid-container">
+        <div class="sensor-box">
+            <h2>Umidade do Solo</h2> 
+            <div class="calibration-button">
+                <a class="box-button" href="">CALIBRAGEM</a>{% comment %} BOTÃO CALIBRAGEM {% endcomment %}
+             </div>
+
+            <p class="info-title">Valor:</p>
+            <p class="info-value">{{ last_values.soil_moisture }}%</p>
+            <p class="info-risco">Possível risco</p>
+            <canvas class="sensor-chart" id="umidade-solo-chart" width="200" height="100"></canvas>
+        </div>
+
+        <div class="sensor-box">
+            <h2>Acelerômetro</h2>
+            <p class="info-title">Valores (X, Y, Z):</p>
+            <p class="info-value">{{ last_values.accel_x }}, {{ last_values.accel_y }}, {{ last_values.accel_z }}</p>
+            <p class="info-risco">Possível risco</p>
+            <canvas class="sensor-chart" id="acelerometro-chart" width="400" height="200"></canvas>
+        </div>
+
+        <div class="sensor-box">
+            <h2>Temperatura do Ar</h2>
+            <p class="info-title">Valor:</p>
+            <p class="info-value">{{ last_values.air_temperature }}°C</p>
+            <p class="info-risco" style="{% if last_values.air_temperature >= 1 and last_values.air_temperature <= 9 %} color: blue; {% elif last_values.air_temperature >= 10 and last_values.air_temperature <= 19 %} color: lightblue; {% elif last_values.air_temperature >= 20 and last_values.air_temperature <= 25 %} color: green; {% elif last_values.air_temperature >= 26 and last_values.air_temperature <= 31 %} color: orange; {% elif last_values.air_temperature >= 32 and last_values.air_temperature <= 40 %} color: red; {% endif %}">
+                {% if last_values.air_temperature >= 1 and last_values.air_temperature <= 9 %}
+                    Frio extremo
+                {% elif last_values.air_temperature >= 10 and last_values.air_temperature <= 19 %}
+                    Frio
+                {% elif last_values.air_temperature >= 20 and last_values.air_temperature <= 25 %}
+                    Temperatura ambiente
+                {% elif last_values.air_temperature >= 26 and last_values.air_temperature <= 31 %}
+                    Calor
+                {% elif last_values.air_temperature >= 32 and last_values.air_temperature <= 40 %}
+                    Calor extremo
+                {% else %}
+                    Valor de risco
+                {% endif %}
+            </p>
+            <canvas class="sensor-chart" id="temperatura-ar-chart" width="200" height="100"></canvas>
+        </div>
+
+        <div class="sensor-box">
+            <h2>Chuva</h2>
+            <p class="info-title">Chuva:</p>
+            <p class="info-risco">Possível risco</p>
+            
+            <h2>Umidade do Ar</h2>
+            <p class="info-title">Valor:</p>
+            <p class="info-value">{{ last_values.air_humidity }}%</p>
+            <p class="info-risco">Possível risco</p>
+            
+        </div>
+    </div>
+
+    <script>
+        
+        // Função para criar um gráfico 
+        function createSensorChart(chartId, chartLabel, fixedData) {
+            var canvas = document.getElementById(chartId).getContext('2d');
+            return new Chart(canvas, {
+                type: 'line',
+                data: {
+                    labels: fixedData.labels,
+                    datasets: [{
+                        label: chartLabel,
+                        data: fixedData.values,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderWidth: 3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'bottom',
+                        },
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        var umidadeSoloChart = createSensorChart('umidade-solo-chart', 'Umidade do Solo', {
+            labels: ['5', '4', '3', '2', '1'],
+            values: [
+                        {% for value in values %}
+                            {% if not value.soil_moisture%}
+                                0,
+                            {% else %}
+                                {{value.soil_moisture}},
+                            {% endif %}
+                        {% endfor %}
+                    ]
+        });
+
+        function createAcelerometroChart(chartId, chartLabel, fixedData) {
+            var canvas = document.getElementById(chartId).getContext('2d');
+            return new Chart(canvas, {
+                type: 'line',
+                data: {
+                    labels: fixedData.labels,
+                    datasets: [
+                        {
+                            label: 'X',
+                            data: fixedData.valuesX,
+                            borderColor: 'rgba(255, 0, 0, 1)', // Vermelho
+                            backgroundColor: 'rgba(255, 0, 0, 0.2)',
+                            borderWidth: 3,
+                            fill: false,
+                        },
+                        {
+                            label: 'Y',
+                            data: fixedData.valuesY,
+                            borderColor: 'rgba(0, 255, 0, 1)', // Verde
+                            backgroundColor: 'rgba(0, 255, 0, 0.2)',
+                            borderWidth: 3,
+                            fill: false,
+                        },
+                        {
+                            label: 'Z',
+                            data: fixedData.valuesZ,
+                            borderColor: 'rgba(0, 0, 255, 1)', // Azul
+                            backgroundColor: 'rgba(0, 0, 255, 0.2)',
+                            borderWidth: 3,
+                            fill: false,
+                        },
+                    ],
+                },
+                options: {
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'bottom',
+                        },
+                        y: {
+                            beginAtZero: true,
+                        },
+                    },
+                },
+            });
+        }
+        
+        var acelerometroChart = createAcelerometroChart('acelerometro-chart', 'Acelerômetro', {
+            labels: ['5', '4', '3', '2', '1'],
+            valuesX:[
+                        {% for value in values %}
+                            {% if not value.accel_x%}
+                                0,
+                                {% else %}
+                                    {{value.accel_x|stringformat:".2f"}},
+                            {% endif %}
+                        {% endfor %}
+                        ], 
+
+            valuesY:[
+                        {% for value in values %}
+                            {% if not value.accel_y%}
+                                0,
+                                {% else %}
+                                    {{value.accel_y|stringformat:".2f"}},
+                            {% endif %}
+                        {% endfor %}
+                        ],
+            valuesZ:[
+                        {% for value in values %}
+                            {% if not value.accel_z%}
+                                0,
+                                {% else %}
+                                    {{value.accel_z|stringformat:".2f"}},
+                            {% endif %}
+                        {% endfor %}
+                        ],
+        });
+
+        var temperaturaArChart = createSensorChart('temperatura-ar-chart', 'Temperatura do Ar', {
+            labels: ['5', '4', '3', '2', '1'],
+            values: [
+                        {% for value in values %}
+                            {% if not value.air_temperature%}
+                                0,
+                                {% else %}
+                                    {{value.air_temperature|stringformat:".2f"}},
+                            {% endif %}
+                        {% endfor %}
+                    ]
+        });
+    </script>
+
+    
+
+{% endblock content %}

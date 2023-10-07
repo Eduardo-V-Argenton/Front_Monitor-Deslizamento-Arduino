@@ -2,8 +2,48 @@
 {% load static %}
 
 {% block content %}
-<h1>Form</h1>
+<style>
+    /* Estilo do formulário */
+    form {
+        background-color: #ededed;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 500px;
+        text-align: center;
+        margin: 0 auto; /* Centraliza o formulário horizontalmente */
+        margin-top: 100px;
+    }
+
+    h1 {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    button {
+        background-color: #007bff;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 16px;
+        text-decoration: none;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    /* Estilo das mensagens de erro */
+    .error-message {
+        color: #ff0000;
+    }
+</style>
+
+
 <form method="post">
+    <h1>Configurações</h1>
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Submit</button>

@@ -2,49 +2,170 @@
 {% load static %}
 
 {% block content %}
-<h1>Sensor modules</h1>
-<a href="{% url 'new_module' 'sensor' %}">Novo Sensor</a>
+<style>
+    /* Estilo da grade de cartões */
+    .card-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center; /* Centraliza os cartões horizontalmente */
+    }
+    form {
+        background-color: #f0f0f0;
+        padding: 5px 10px 10px 10px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        margin-top: 100px;
+    }
 
-    <table border="1">
-        <tr>
-            <th>Name</th>
-            <th>Is Enable</th>
-            <th>Addh</th>
-            <th>Addl</th>
-            <th>Channel</th>
-            <th>Air Data Rate</th>
-            <th>Transmission Power</th>
-            <th>Wor Period</th>
-            <th>Enable LBT</th>
-            <th>Timeout Sensors Read Packet</th>
-            <th>Timeout Config Packet</th>
-            <th>Timeout Handshake</th>
-            <th>Timeout SYNACK</th>
-            <th>Timeout ACK</th>
-            <th>Edit</th>
-            <th>Delete</th>
-        </tr>
-        {% for module in modules %}
-        <tr>
-            <td>{{ module.name }}</td>
-            <td>{{ module.is_enable }}</td>
-            <td>{{ module.addh }}</td>
-            <td>{{ module.addl }}</td>
-            <td>{{ module.channel }}</td>
-            <td>{{ module.air_data_rate }}</td>
-            <td>{{ module.transmission_power }}</td>
-            <td>{{ module.wor_period }}</td>
-            <td>{{ module.enable_lbt }}</td>
-            <td>{{ module.timeout_sensors_read_packet }}</td>
-            <td>{{ module.timeout_config_packet }}</td>
-            <td>{{ module.timeout_handshake }}</td>
-            <td>{{ module.timeout_SYNACK }}</td>
-            <td>{{ module.timeout_ACK }}</td>
-            <td><a href={% url 'edit_sensor_module' module.id %}>Editar</a></td>
-            <td><a href={% url 'delete_sensor' module.id %}>Deletar</a></td>
-        </tr>
-        {% endfor %}
-    </table>
-</body>
-</html>
+    .card {
+        background-color: #e3e3e3;
+        border-radius: 5px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column; /* Alinhar o conteúdo verticalmente */
+        max-width: 30%; /* Defina a largura máxima dos cartões */
+    }
+
+    /* Estilo do nome no topo do card */
+    .card-name {
+        background-color: #333;
+        color: #fff;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        text-align: center;
+        padding: 10px 20px; /* Aumentar o padding para preencher o topo */
+        margin: -20px -20px 20px -20px; /* Remover o espaçamento interno do .card */
+    }
+
+    .grid-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* Duas colunas no grid */
+        gap: 10px; /* Espaçamento entre as células do grid */
+    }
+
+    .grid-item {
+        background-color: #fcfcfc;
+        padding: 10px;
+        border-radius: 5px;
+    }
+
+    /* Estilo do botão "Novo Sensor" */
+    .new-module-button-container {
+        display: flex;
+        justify-content: center; /* Centralize horizontalmente */
+        align-items: center; /* Centralize verticalmente */
+        margin: 10px; /* Altura total da viewport */
+    }
+
+    .new-module-button {
+        background-color: #007bff;
+        color: #fff;
+        max-width: 150px; /* Defina a largura máxima desejada */
+        padding: 15px 10px; /* Ajuste o padding conforme necessário */
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 14px;
+        text-decoration: none;
+        text-align: center;
+    }
+
+    .new-module-button:hover {
+        background-color: #0056b3;
+        text-decoration: none;
+    }
+
+    /* Estilo dos botões "Editar" e "Deletar" */
+    .edit-delete-buttons {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .edit-delete-buttons a {
+        color: #fff;
+        padding: 10px 48px; /* Aumentar o espaçamento à direita e à esquerda dos botões */
+        border: none;
+        border-radius: 5px; /* Correspondente ao border-radius dos grid-items */
+        cursor: pointer;
+        font-size: 14px; /* Reduzir o tamanho da fonte */
+        text-decoration: none;
+        text-align: center;
+        margin-left: 10px; /* Adicionar margem esquerda para separação entre os botões */
+    }
+
+    .edit-delete-buttons a:first-child {
+        margin-left: 0; /* Remover margem esquerda do primeiro botão para evitar excesso de espaço */
+        background-color: #007bff; /* Cor azul para o botão "Editar" */
+    }
+
+    .edit-delete-buttons a:last-child {
+        background-color: #ff0000; /* Cor vermelha para o botão "Deletar" */
+    }
+
+    .edit-delete-buttons a:first-child:hover {
+        background-color: #0056b3; /* Cor azul para o botão "Editar" durante o hover */
+    }
+
+    .edit-delete-buttons a:last-child:hover {
+        background-color: #b00000; /* Cor vermelha para o botão "Deletar" durante o hover */
+    }
+
+    /* Media query para tornar o layout responsivo */
+    @media screen and (max-width: 1380px) {
+        .card {
+            max-width: 100%; /* Cartões ocupam 100% da largura da tela em telas pequenas */
+        }
+    }
+
+    /* Estilo adicional para ajustar o título e o botão */
+    .title-sensor {
+        {% comment %} margin-top: 50px; /* Adicionar margem superior para afastar o título do cabeçalho da página */ {% endcomment %}
+        margin-bottom: 10px; /* Reduzir a margem inferior do título */
+    }
+</style>
+
+<script>
+    function confirmDelete() {
+        return confirm("Tem certeza de que deseja excluir este sensor?"); // Exibe uma caixa de diálogo de confirmação
+    }
+</script>
+
+<form>
+    <h1 class="title-sensor">Sensores</h1>
+    <div class="new-module-button-container">
+        <a href="{% url 'new_module' 'sensor' %}" class="new-module-button">Novo Sensor</a>
+    </div>
+<div class="card-grid">
+    {% for module in modules %}
+    <div class="card">
+        <!-- Nome no topo com fundo cinza escuro -->
+        <div class="card-name">{{ module.name }}</div>
+        <div class="grid-container">
+            <div class="grid-item"><strong>Is Enable:</strong> {{ module.is_enable }}</div>
+            <div class="grid-item"><strong>Addh:</strong> {{ module.addh }}</div>
+            <div class="grid-item"><strong>Addl:</strong> {{ module.addl }}</div>
+            <div class="grid-item"><strong>Channel:</strong> {{ module.channel }}</div>
+            <div class="grid-item"><strong>Air Data Rate:</strong> {{ module.air_data_rate }}</div>
+            <div class="grid-item"><strong>Transmission Power:</strong> {{ module.transmission_power }}</div>
+            <div class="grid-item"><strong>Wor Period:</strong> {{ module.wor_period }}</div>
+            <div class="grid-item"><strong>Enable LBT:</strong> {{ module.enable_lbt }}</div>
+            <div class="grid-item"><strong>Timeout Sensors Read Packet:</strong> {{ module.timeout_sensors_read_packet }}</div>
+            <div class="grid-item"><strong>Timeout Config Packet:</strong> {{ module.timeout_config_packet }}</div>
+            <div class="grid-item"><strong>Timeout Handshake:</strong> {{ module.timeout_handshake }}</div>
+            <div class="grid-item"><strong>Timeout SYNACK:</strong> {{ module.timeout_SYNACK }}</div>
+            <div class="grid-item"><strong>Timeout ACK:</strong> {{ module.timeout_ACK }}</div>
+            <div class="grid-item"><strong>City:</strong> {{ module.city }}</div>
+            <div class="grid-item"><strong>Country:</strong> {{ module.country }}</div>
+
+            <div class="edit-delete-buttons">
+                <a href={% url 'edit_sensor_module' module.id %}>Editar</a>
+                <a href="{% url 'delete_sensor' module.id %}" onclick="return confirmDelete();">Deletar</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+</form>
 {% endblock content %}

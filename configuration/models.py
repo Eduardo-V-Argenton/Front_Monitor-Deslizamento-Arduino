@@ -81,7 +81,9 @@ class SensorModule(Module):
     timeout_ACK = models.FloatField(default=3, blank=False, null=False)
     auto_send_sensors_period= models.IntegerField(default=10, blank=False, null=False)
     next_sensors_read = models.DateTimeField(auto_now_add=True)
-
+    city = models.CharField(max_length=255,default="São Paulo", blank=False, null=False)
+    country = models.CharField(max_length=2,default="BR", blank=False, null=False)
+    
     fields_command = [
         'addh','addl','transmission_power','enable_lbt', 'channel', 
         'wor_period','air_data_rate', 'crypth', 'cryptl','timeout_config_packet',

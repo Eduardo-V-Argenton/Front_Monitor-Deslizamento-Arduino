@@ -1,21 +1,74 @@
 {% load static %}
-<nav class="navbar navbar-expand-lg navbar-dark static-top" style="background-color: rgb(80,80,80);">
+<style>
+    /* Importe a fonte 'Raleway' do Google Fonts e aplique-a aos elementos desejados */
+    @import url('https://fonts.googleapis.com/css2?family=Raleway&display=swap');
+    
+    /* Defina a fonte para ser usada */
+    html, body, .navbar-nav a {
+        font-family: 'Raleway', sans-serif;
+    }
+    
+    .navbar {
+        background-color: rgb(80, 80, 80);
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+    }
 
+    .container {
+        text-align: center;
+    }
+
+    .navbar-nav {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        justify-content: center; /* Centraliza os itens horizontalmente */
+    }
+
+    .nav-item {
+        display: inline;
+    }
+
+    .nav-link {
+        margin: 60px; /* Reduzi a margem para melhorar a aparência em telas menores */
+        color: #fff;
+        text-decoration: none;
+    }
+
+    /* Remova a barra de rolagem horizontal */
+    html, body {
+        overflow-x: hidden;
+        text-decoration: none;
+    }
+
+    /* Adicione uma media query para telas menores (por exemplo, abaixo de 768px) */
+    @media (max-width: 768px) {
+        .navbar-nav {
+            {% comment %} flex-direction: column; /* Altera a direção dos itens para empilhados verticalmente */ {% endcomment %}
+            align-items: center; /* Centraliza os itens verticalmente */
+        }
+
+        .nav-link {
+            margin: 10px 30px; /* Ajusta a margem verticalmente */
+        }
+    }
+</style>
+
+<nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'index' %}"style="margin-right:50px;">Home</a>
-                </li>
-            </ul>
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'modules' %}"style="margin-right:50px;">Configurações</a>
-                </li>
-            </ul>
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'logout'%}">Sair</a>
-                </li>
-            </ul>
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'index' %}">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'modules' %}">Configurações</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'logout' %}">Sair</a>
+            </li>
+        </ul>
     </div>
 </nav>

@@ -1,5 +1,54 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<h1>Home Index</h1>
+
+<style>
+    /* Adicione suas regras de estilo CSS aqui */
+    .box-button {
+        background-color: #007bff;
+        color: #ffffff;
+        font-size: 16px;
+        padding: 10px 15px;
+        margin: 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        display: block;
+        width: 150px;
+        text-align: center;
+        text-decoration: none;
+    }
+
+    .box-button:hover {
+        background-color: #0056b3;
+    }
+
+    .boxes {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+    }
+
+    form {
+        background-color: #ededed;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 500px;
+        text-align: center;
+        margin: 0 auto; /* Centraliza horizontalmente */
+        margin-top: 100px;
+    }
+</style>
+
+<form>
+    <h1>Sensores disponíveis</h1>
+    {% for sensor_module in sensor_modules %}
+    <div class="boxes">
+        <a class="box-button" href="{% url 'info' sensor_module.id %}">{{ sensor_module.name }}</a>
+    </div>
+    {% endfor %}
+</form>
 {% endblock content %}
