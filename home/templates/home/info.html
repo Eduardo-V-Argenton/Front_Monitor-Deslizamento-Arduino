@@ -81,7 +81,7 @@
         <div class="sensor-box">
             <h2>Umidade do Solo</h2> 
             <div class="calibration-button">
-                <a class="box-button" href="">CALIBRAGEM</a>{% comment %} BOTÃO CALIBRAGEM {% endcomment %}
+                    <a class="box-button" href="{% url 'calibrate' id %}">CALIBRAGEM</a>
              </div>
 
             <p class="info-title">Valor:</p>
@@ -134,7 +134,9 @@
     </div>
 
     <script>
-        
+        setTimeout(function () {
+            location.reload();
+        }, 10000); // 10000 milliseconds = 10 seconds
         // Função para criar um gráfico 
         function createSensorChart(chartId, chartLabel, fixedData) {
             var canvas = document.getElementById(chartId).getContext('2d');

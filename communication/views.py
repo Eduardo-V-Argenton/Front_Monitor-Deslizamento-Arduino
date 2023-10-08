@@ -22,11 +22,12 @@ def get_data(request):
 
         sensor_module = get_object_or_404(SensorModule,id=sensors_read[5]);
         weather_info = get_web_weather_info(sensor_module.city, sensor_module.country)
+        soil_moisture = (int(sensors_read[3]) - sensor_module.air_soil_moisture_value) * 100 / (sensor_module.water_soil_moisture_value - sensor_module.air_soil_moisture_value) 
         instance = SensorsRead(
             accel_x=float(sensors_read[0]) if sensors_read[0] != 'nan' else 0.0,
             accel_y=float(sensors_read[1]) if sensors_read[1] != 'nan' else 0.0,
             accel_z=float(sensors_read[2]) if sensors_read[2] != 'nan' else 0.0,
-            soil_moisture=int(sensors_read[3]) if sensors_read[3] != 'nan' else 0,
+            soil_moisture=soil_moisture if soil_moisture != 'nan' else 0,
             rain_sensor_value=int(sensors_read[4]) if sensors_read[4] != 'nan' else 0,
             sensor_module=sensor_module,
             air_temperature= float(weather_info[1]),

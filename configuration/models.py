@@ -64,7 +64,6 @@ class ControlModule(Module):
     
 
 class SensorModule(Module):
-    is_enable=models.BooleanField(default=False, null=False)
     name=models.CharField(max_length=255, blank=False, null=False, unique=True)
     history = HistoricalRecords()
     #LoRa
@@ -83,6 +82,8 @@ class SensorModule(Module):
     next_sensors_read = models.DateTimeField(auto_now_add=True)
     city = models.CharField(max_length=255,default="São Paulo", blank=False, null=False)
     country = models.CharField(max_length=2,default="BR", blank=False, null=False)
+    air_soil_moisture_value = models.IntegerField(default=600, blank=False, null=False)
+    water_soil_moisture_value = models.IntegerField(default=350, blank=False, null=False)
     
     fields_command = [
         'addh','addl','transmission_power','enable_lbt', 'channel', 
@@ -92,7 +93,7 @@ class SensorModule(Module):
 
     def print_sensors_read_command(self):
         command = self.print_module()
-        message = '2'+';'+command
+        message = '2'+';'+command+';'+str(self.id)
         crc = self.calculate_crc16(message)
         return message+';'+str(int(crc))
 
