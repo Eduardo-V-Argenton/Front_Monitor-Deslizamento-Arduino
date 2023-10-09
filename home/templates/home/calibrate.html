@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <br><br><br><br><br><br><br><br><br><br><br><br>
+    <form action="{% url 'calibrate' id %}" method="post">
+        {% csrf_token %}
+        <label for="air_value">Valor medido com sensor ao ar livre:</label>
+        <input type="number" id="air_value" name="air_value" required value="{{air_value}}">
+        <br><br>
+    
+        <label for="water_value">Valor medido com sensor mergulhado na água:</label>
+        <input type="water_value" id="water_value" name="water_value" required value="{{water_value}}">
+        <br><br>
+    
+        <input type="submit" value="Enviar">
+    </form>
+{% endblock content%}
