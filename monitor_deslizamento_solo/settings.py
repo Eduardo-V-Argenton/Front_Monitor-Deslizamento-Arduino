@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'configuration',
     'accounts',
     'sensors',
-    'communication'
+    'communication',
+    'errors'
 ]
 
 MIDDLEWARE = [

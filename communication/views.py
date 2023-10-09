@@ -1,11 +1,11 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from configuration.models import ModuleObserver, SensorModule
 from sensors.models import SensorsRead
-from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
 from datetime import time, timedelta
 from django.utils import timezone
 from configuration.models import SensorModule
+from errors.models import Errors
 from .getWebWeatherInfo import get_web_weather_info  
 
 key = "6dc8a0fb"
@@ -63,7 +63,14 @@ def get_response(request):
             if int(response) > 0:
                 observer.executed = True
                 observer.save()
-            elif int(response) <= 0:
-                messages.error(request, 'Ocorreu um erro')
     return redirect('index')
 
+@csrf_exempt
+def get_errors(request):
+    if request.POST.get('key') == key:
+        response = request.POST.get('response')
+        response_list = response.split(';')
+        sensor_module = get_object_or_404(SensorModule,id=response_list[1]);
+        errors = Errors(message=response_list[0], sensor_module=sensor_module)
+        errors.save()
+    return redirect('index')

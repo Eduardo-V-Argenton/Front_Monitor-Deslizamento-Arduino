@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<br><br>
+<h1>Erros {{id}}</h1>
+<div class="card-grid">
+    {% for error in errors %}
+    <div class="card">
+        <div class="card-name">{{ module.name }}</div>
+        <div class="grid-container">
+            <div class="grid-item"><strong>Timestamp</strong> {{ error.timestamp }}</div>
+            <div class="grid-item"><strong>Mensagem</strong> {{ error.message }}</div>
+
+            <div class="edit-delete-buttons">
+                <a href="{% url 'delete_error' sensor_module_id error.id %}">Deletar</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock content %}

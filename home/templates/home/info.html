@@ -76,8 +76,8 @@
        }
 
     </style>
-
     <div class="grid-container">
+    {% if has_errors %}<a href="{% url 'errors' id %}">i</a>{% endif %}
         <div class="sensor-box">
             <h2>Umidade do Solo</h2> 
             <div class="calibration-button">
