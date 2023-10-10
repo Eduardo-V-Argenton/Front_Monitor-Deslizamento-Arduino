@@ -2,21 +2,80 @@
 {% load static %}
 
 {% block content %}
-<br><br>
-<h1>Erros {{id}}</h1>
-<div class="card-grid">
-    {% for error in errors %}
-    <div class="card">
-        <div class="card-name">{{ module.name }}</div>
-        <div class="grid-container">
-            <div class="grid-item"><strong>Timestamp</strong> {{ error.timestamp }}</div>
-            <div class="grid-item"><strong>Mensagem</strong> {{ error.message }}</div>
 
-            <div class="edit-delete-buttons">
-                <a href="{% url 'delete_error' sensor_module_id error.id %}">Deletar</a>
+<style>
+.box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+}
+form {
+    background-color: #ededed;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 500px;
+    text-align: center;
+    margin-top: 100px;
+}
+.grid-item strong {
+    display: block; /* Faz com que a palavra "Mensagem" fique em uma nova linha */
+}
+
+.grid-item {
+    word-wrap: break-word; /* Força a quebra de palavras longas */
+}
+
+.edit-delete-buttons a {
+    background-color: #007bff; /* Cor azul para o botão "Editar" */
+    color: #fff;
+    padding: 10px 48px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: none;
+    text-align: center;
+    margin-left: 10px;
+    margin-top: 20px; /* Adicione margem superior para espaçamento entre o botão "Deletar" e a mensagem acima */
+}
+
+/* Estilize o botão quando o mouse passar por cima */
+.edit-delete-buttons a:hover {
+    background-color: #0056b3;
+    text-decoration: none;
+}
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+    
+</style>
+<div class="box">
+    <form>
+        <h1>Erros {{id}}</h1>
+
+        <div class="card-grid">
+            {% for error in errors %}
+            <div class="card">
+                <div class="card-name">{{ module.name }}</div>
+                <div class="grid-container">
+                    <div class="grid-item"><strong>Timestamp</strong> {{ error.timestamp }}</div><br>
+                    <div class="grid-item"><strong>Mensagem</strong> {{ error.message }}</div>
+                    <br><br>
+                    <div class="edit-delete-buttons">
+                        <a href="{% url 'delete_error' sensor_module_id error.id %}">Deletar</a>
+                    </div>
+                    <br><br>    
+                </div>
             </div>
+            {% endfor %}
         </div>
-    </div>
-    {% endfor %}
+    <form>
 </div>
+
+
+
 {% endblock content %}

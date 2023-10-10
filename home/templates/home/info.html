@@ -74,10 +74,27 @@
        .box-button:hover {
            background-color: #2980b9;
        }
+       .bolinha-vermelha {
+        width: 30px; /* Largura da bolinha */
+        height: 30px; /* Altura da bolinha */
+        background-color: red; /* Cor de fundo vermelho */
+        border-radius: 50%; /* Define a forma da bolinha */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        color: white; /* Cor do texto dentro da bolinha */
+        font-weight: bold; /* Pode ajustar o estilo do texto conforme necessário */
+      }
+      .bolinha-vermelha:hover{
+        background-color: #b00000; /* Cor vermelha para o botão "Deletar" durante o hover */
+      }
 
     </style>
     <div class="grid-container">
-    {% if has_errors %}<a href="{% url 'errors' id %}">i</a>{% endif %}
+        {% if has_errors %}
+            <a href="{% url 'errors' id %}" class="bolinha-vermelha">i</a>
+        {% endif %}
         <div class="sensor-box">
             <h2>Umidade do Solo</h2> 
             <div class="calibration-button">
