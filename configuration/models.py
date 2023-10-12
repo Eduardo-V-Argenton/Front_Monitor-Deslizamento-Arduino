@@ -84,6 +84,9 @@ class SensorModule(Module):
     country = models.CharField(max_length=2,default="BR", blank=False, null=False)
     air_soil_moisture_value = models.IntegerField(default=600, blank=False, null=False)
     water_soil_moisture_value = models.IntegerField(default=350, blank=False, null=False)
+    LC = models.IntegerField(default=25, blank=False, null=False)
+    LP = models.IntegerField(default=50, blank=False, null=False)
+    LL = models.IntegerField(default=75, blank=False, null=False)
     
     fields_command = [
         'addh','addl','transmission_power','enable_lbt', 'channel', 
