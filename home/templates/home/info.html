@@ -99,31 +99,6 @@
     </style>
 
     <div class="danger-level">
-        
-        <script>
-            function calculateIC() {
-                var LC = parseFloat(document.getElementById('LC').textContent);
-                var LP = parseFloat(document.getElementById('LP').textContent);
-                var LL = parseFloat(document.getElementById('LL').textContent);
-                var h = parseFloat(document.getElementById('SOILMOSTURE').textContent);
-
-                if (!isNaN(LC) && !isNaN(LP) && !isNaN(LL) && !isNaN(h)) {
-                    var IC = (LL - h) / (LL - LP);
-                    var ICElement = document.getElementById('IC');
-                    if (ICElement) {
-                        ICElement.textContent = IC.toFixed(2);
-                    } else {
-                        console.error("Element with ID 'IC' not found");
-                    }
-                } else {
-                    console.error("Invalid input");
-                }
-            }
-            
-            window.onload = calculateIC;
-        </script>
-
-        {% comment %} danger_level = (IC*0.4)+(last_values.accel_x*0.13)+(last_values.accel_y*0.13)+(last_values.accel_z*0.13)+(last_values) {% endcomment %}
 
             {% if IC >= 0.75 %}
                 {% if last_values.accel_x <= 0.1 or last_values.accel_y <= 0.1 or last_values.accel_z <= 0.1 and last_values.rain_sensor_value > 2999 %}
@@ -153,13 +128,12 @@
             {% comment %} <p class="info-title">:</p> {% endcomment %}
             <p class="info-value" id="SOILMOSTURE">{{ last_values.soil_moisture }}%</p>
             <p class="info-title">LC, LP, LL:</p>
-            <span class="info-value-ID" id="LC">{{ LC }}</span>
-            <span class="info-value-ID" id="LP">{{ LP }}</span>
-            <span class="info-value-ID" id="LL">{{ LL }}</span>
+            <span class="info-value-ID" id="LC">{{ lc }}</span>
+            <span class="info-value-ID" id="LP">{{ lp }}</span>
+            <span class="info-value-ID" id="LL">{{ ll }}</span>
 
 
-            <p class="info-risco">Valor IC: <span id="IC"></span></p>
-
+            <p class="info-risco">Valor IC: {{ ic }}</p>
 
             <canvas class="sensor-chart" id="umidade-solo-chart" width="200" height="100"></canvas>
         </div>
@@ -252,6 +226,7 @@
         setTimeout(function () {
             location.reload();
         }, 10000);
+        
         // Função para criar um gráfico 
         function createSensorChart(chartId, chartLabel, fixedData) {
             var canvas = document.getElementById(chartId).getContext('2d');

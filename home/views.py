@@ -6,25 +6,29 @@ from errors.models import Errors
 
 @login_required(redirect_field_name='login')
 def info(request, sensor_module_id):
+    ic = 0.0
     has_errors=False
     # Pegar os 5 últimos
     values = SensorsRead.objects.all().filter(sensor_module=sensor_module_id).order_by('timestamp').reverse()[:5]
     
     sensor_module = get_object_or_404(SensorModule, id=sensor_module_id)
 
-    LC = sensor_module.LC
-    LP = sensor_module.LP
-    LL = sensor_module.LL
-    
-    
+    lc = sensor_module.LC
+    lp = sensor_module.LP
+    ll = sensor_module.LL
     last_values = []
+    
     if values :
         last_values = SensorsRead.objects.filter(sensor_module=sensor_module_id).order_by('timestamp').last()
+        ic = round((ll - last_values.soil_moisture) / (ll - lp),3)
+
     errors = Errors.objects.filter(sensor_module=sensor_module_id)
+
     if(errors):
         has_errors=True
+
     return render(request, 'home/info.html', {'values': values, 'last_values': last_values, 'id':sensor_module_id,
-                                              'has_errors':has_errors, 'LC': LC, 'LP': LP, 'LL': LL, })
+                                              'has_errors':has_errors, 'lc': lc, 'lp': lp, 'll': ll, 'ic':ic })
 
 @login_required(redirect_field_name='login')
 def index(request):

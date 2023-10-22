@@ -21,12 +21,24 @@ def get_data(request):
         # ToDo atualizar valor de periculosidade
 
         sensor_module = get_object_or_404(SensorModule,id=sensors_read[5])
+        if SensorsRead.objects.filter(sensor_module=sensors_read[5]).count() == 0:
+            sensor_module.accel_default_x = sensors_read[0]
+            sensor_module.accel_default_y = sensors_read[1]
+            sensor_module.accel_default_z = sensors_read[2]
+            accel_x = accel_y = accel_z = 0.0;
+            sensor_module.save()
+        else:
+            accel_x = abs(round(float(sensors_read[0]) - sensor_module.accel_default_x, 3))
+            accel_y = abs(round(float(sensors_read[1]) - sensor_module.accel_default_y, 3))
+            accel_z = abs(round(float(sensors_read[2]) - sensor_module.accel_default_z, 3))
+
+
         weather_info = get_web_weather_info(sensor_module.city, sensor_module.country)
         soil_moisture = (int(sensors_read[3]) - sensor_module.air_soil_moisture_value) * 100 / (sensor_module.water_soil_moisture_value - sensor_module.air_soil_moisture_value)
         instance = SensorsRead(
-            accel_x=float(sensors_read[0]) if sensors_read[0] != 'nan' else 0.0,
-            accel_y=float(sensors_read[1]) if sensors_read[1] != 'nan' else 0.0,
-            accel_z=float(sensors_read[2]) if sensors_read[2] != 'nan' else 0.0,
+            accel_x= accel_x,
+            accel_y= accel_y,
+            accel_z= accel_z,
             soil_moisture=soil_moisture if soil_moisture != 'nan' else 0,
             rain_sensor_value=int(sensors_read[4]) if sensors_read[4] != 'nan' else 0,
             sensor_module=sensor_module,
@@ -34,11 +46,6 @@ def get_data(request):
             air_humidity= float(weather_info[0])
         )
         instance.save()
-        if SensorsRead.objects.filter(sensor_module=sensors_read[5]).count() == 0:
-            sensor_module.accel_default_x = instance.accel_x
-            sensor_module.accel_default_y = instance.accel_y 
-            sensor_module.accel_default_z = instance.accel_z
-            sensor_module.save()
     return redirect('index')
 
 def send_command(request):
