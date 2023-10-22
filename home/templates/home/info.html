@@ -9,7 +9,7 @@
             flex-wrap: wrap; /* Adicione flex-wrap para permitir que as caixas quebrem para a próxima linha em telas menores */
             justify-content: center; /* Centralize horizontalmente */
             align-items: flex-start; /* Alinhe no início verticalmente */
-            margin-top: 100px;
+            margin-top: 50px;
         }
 
         /* Estilize as caixas dos sensores */
@@ -21,7 +21,7 @@
             box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
             text-align: center;
             width: 280px; /* Aumente a largura da "box" em 20% */
-            height: 400px; /* Defina uma altura fixa para a "box" */
+            height: 440px; /* Defina uma altura fixa para a "box" */
             display: flex;
             flex-direction: column; /* Alinhe o conteúdo verticalmente */
         }
@@ -90,30 +90,101 @@
         background-color: #b00000; /* Cor vermelha para o botão "Deletar" durante o hover */
       }
 
+      .danger-level{
+        margin-top: 100px;
+      }
+
+
+
     </style>
+
+    <div class="danger-level">
+        
+        <script>
+            function calculateIC() {
+                var LC = parseFloat(document.getElementById('LC').textContent);
+                var LP = parseFloat(document.getElementById('LP').textContent);
+                var LL = parseFloat(document.getElementById('LL').textContent);
+                var h = parseFloat(document.getElementById('SOILMOSTURE').textContent);
+
+                if (!isNaN(LC) && !isNaN(LP) && !isNaN(LL) && !isNaN(h)) {
+                    var IC = (LL - h) / (LL - LP);
+                    var ICElement = document.getElementById('IC');
+                    if (ICElement) {
+                        ICElement.textContent = IC.toFixed(2);
+                    } else {
+                        console.error("Element with ID 'IC' not found");
+                    }
+                } else {
+                    console.error("Invalid input");
+                }
+            }
+            
+            window.onload = calculateIC;
+        </script>
+
+        {% comment %} danger_level = (IC*0.4)+(last_values.accel_x*0.13)+(last_values.accel_y*0.13)+(last_values.accel_z*0.13)+(last_values) {% endcomment %}
+
+            {% if IC >= 0.75 %}
+                {% if last_values.accel_x <= 0.1 or last_values.accel_y <= 0.1 or last_values.accel_z <= 0.1 and last_values.rain_sensor_value > 2999 %}
+                    <h1>NÃO APRESENTA RISCOS</h1>
+                {% endif %}
+            {% elif IC >= 0.4 and IC < 0.75 %}
+                {% if last_values.accel_x <= 0.4 or last_values.accel_y <= 0.4 or last_values.accel_z <= 0.4 and last_values.rain_sensor_value <= 2999 %}
+                    <h1>ATENÇÃO</h1>
+                {% endif %}
+            {% else %}
+                <h1>RISCO DE DESLIZAMENTO!</h1>
+            {% endif %}
+
+    </div>
+
     <div class="grid-container">
+
         {% if has_errors %}
             <a href="{% url 'errors' id %}" class="bolinha-vermelha">i</a>
         {% endif %}
         <div class="sensor-box">
             <h2>Umidade do Solo</h2> 
             <div class="calibration-button">
-                    <a class="box-button" href="{% url 'calibrate' id %}">CALIBRAGEM</a>
+                    <a class="box-button" href="{% url 'calibrate' id %}">CALIBRAÇÃO</a>
              </div>
 
-            <p class="info-title">Valor:</p>
-            <p class="info-value">{{ last_values.soil_moisture }}%</p>
-            <p class="info-risco">Possível risco</p>
+            {% comment %} <p class="info-title">:</p> {% endcomment %}
+            <p class="info-value" id="SOILMOSTURE">{{ last_values.soil_moisture }}%</p>
+            <p class="info-title">LC, LP, LL:</p>
+            <span class="info-value-ID" id="LC">{{ LC }}</span>
+            <span class="info-value-ID" id="LP">{{ LP }}</span>
+            <span class="info-value-ID" id="LL">{{ LL }}</span>
+
+
+            <p class="info-risco">Valor IC: <span id="IC"></span></p>
+
+
             <canvas class="sensor-chart" id="umidade-solo-chart" width="200" height="100"></canvas>
         </div>
 
         <div class="sensor-box">
             <h2>Acelerômetro</h2>
             <p class="info-title">Valores (X, Y, Z):</p>
-            <p class="info-value">{{ last_values.accel_x }}, {{ last_values.accel_y }}, {{ last_values.accel_z }}</p>
-            <p class="info-risco">Possível risco</p>
+            <p class="info-value">
+                {{ last_values.accel_x|default:0 }}, {{ last_values.accel_y|default:0 }}, {{ last_values.accel_z|default:0 }}
+            </p>
+            {% with accel_x=last_values.accel_x|default:0 accel_y=last_values.accel_y|default:0 accel_z=last_values.accel_z|default:0 %}
+                {% if accel_x >= 0.1 and accel_x <= 0.2 or accel_y >= 0.1 and accel_y <= 0.2 or accel_z >= 0.1 and accel_z <= 0.2 %}
+                    <p class="info-risco" style="color: blue;">Baixo risco</p>
+                {% elif accel_x >= 0.4 and accel_x <= 0.6 or accel_y >= 0.4 and accel_y <= 0.6 or accel_z >= 0.4 and accel_z <= 0.6 %}
+                    <p class="info-risco" style="color: orange;">Atenção</p>
+                {% elif accel_x > 0.6 or accel_y > 0.6 or accel_z > 0.6 %}
+                    <p class="info-risco" style="color: red;">Alto risco</p>
+                {% else %}
+                    <p class="info-risco" style="color: black;">Sem riscos</p>
+                {% endif %}
+            {% endwith %}
             <canvas class="sensor-chart" id="acelerometro-chart" width="400" height="200"></canvas>
-        </div>
+        </div>        
+        
+        
 
         <div class="sensor-box">
             <h2>Temperatura do Ar</h2>
@@ -139,21 +210,48 @@
 
         <div class="sensor-box">
             <h2>Chuva</h2>
-            <p class="info-title">Chuva:</p>
-            <p class="info-risco">Possível risco</p>
+            <p class="info-title">Situação:</p>
+            <p class="info-risco" style="{% if last_values.rain_sensor_value >= 3000%} color: blue; {% endif %}">
+                {% if last_values.rain_sensor_value >= 3000 %}
+                    Seco
+                {% else %}
+                    Chovendo
+                {% endif %}
+            </p>
+            <br><br>
             
             <h2>Umidade do Ar</h2>
             <p class="info-title">Valor:</p>
-            <p class="info-value">{{ last_values.air_humidity }}%</p>
-            <p class="info-risco">Possível risco</p>
-            
+            <p class="info-value">{{ last_values.air_humidity }}%</p>            
+
+            <p class="info-risco" style="{% if last_values.air_humidity >= 0 and last_values.air_humidity <= 20 %}
+                color: brown; {% elif last_values.air_humidity >= 21 and last_values.air_humidity <= 40 %}
+                color: gold; {% elif last_values.air_humidity >= 41 and last_values.air_humidity <= 60 %}
+                color: blue; {% elif last_values.air_humidity >= 61 and last_values.air_humidity <= 80 %}
+                color: wine; {% elif last_values.air_humidity >= 81 and last_values.air_humidity <= 100 %}
+                color: dark-red; {% endif %}">
+                {% if last_values.air_humidity >= 0 and last_values.air_humidity <= 20 %}
+                    Muito baixa
+                {% elif last_values.air_humidity >= 21 and last_values.air_humidity <= 40 %}
+                    Baixa
+                {% elif last_values.air_humidity >= 41 and last_values.air_humidity <= 60 %}
+                    Moderada - Ideal
+                {% elif last_values.air_humidity >= 61 and last_values.air_humidity <= 80 %}
+                    Alta
+                {% elif last_values.air_humidity >= 81 and last_values.air_humidity <= 100 %}
+                    Muito alta
+                {% else %}
+                    Erro
+                {% endif %}
+            </p>
         </div>
-    </div>
+
 
     <script>
+        // 10000 milliseconds = 10 seconds
         setTimeout(function () {
             location.reload();
-        }, 10000); // 10000 milliseconds = 10 seconds
+        }, 10000);
         // Função para criar um gráfico 
         function createSensorChart(chartId, chartLabel, fixedData) {
             var canvas = document.getElementById(chartId).getContext('2d');

@@ -87,6 +87,9 @@ class SensorModule(Module):
     LC = models.IntegerField(default=25, blank=False, null=False)
     LP = models.IntegerField(default=50, blank=False, null=False)
     LL = models.IntegerField(default=75, blank=False, null=False)
+    accel_default_x = models.FloatField(default=0.0, blank=False, null=False)
+    accel_default_y = models.FloatField(default=0.0, blank=False, null=False)
+    accel_default_z = models.FloatField(default=0.0, blank=False, null=False)
     
     fields_command = [
         'addh','addl','transmission_power','enable_lbt', 'channel', 
@@ -167,7 +170,7 @@ class ModuleForm(forms.ModelForm):
 class SensorModuleForm(ModuleForm):
     class Meta:
         model = SensorModule
-        exclude= 'is_enable','history', 'next_sensors_read', 
+        exclude= 'is_enable','history', 'next_sensors_read', 'accel_default_x','accel_default_y', 'accel_default_z'
 
 
 class ControlModuleForm(ModuleForm):

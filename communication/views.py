@@ -18,11 +18,11 @@ def get_data(request):
         data = request.POST.get('data')
         sensors_read = data.split(';')
 
-        # ToDo ataulizar valor de periculosidade
+        # ToDo atualizar valor de periculosidade
 
-        sensor_module = get_object_or_404(SensorModule,id=sensors_read[5]);
+        sensor_module = get_object_or_404(SensorModule,id=sensors_read[5])
         weather_info = get_web_weather_info(sensor_module.city, sensor_module.country)
-        soil_moisture = (int(sensors_read[3]) - sensor_module.air_soil_moisture_value) * 100 / (sensor_module.water_soil_moisture_value - sensor_module.air_soil_moisture_value) 
+        soil_moisture = (int(sensors_read[3]) - sensor_module.air_soil_moisture_value) * 100 / (sensor_module.water_soil_moisture_value - sensor_module.air_soil_moisture_value)
         instance = SensorsRead(
             accel_x=float(sensors_read[0]) if sensors_read[0] != 'nan' else 0.0,
             accel_y=float(sensors_read[1]) if sensors_read[1] != 'nan' else 0.0,
@@ -34,6 +34,11 @@ def get_data(request):
             air_humidity= float(weather_info[0])
         )
         instance.save()
+        if SensorsRead.objects.filter(sensor_module=sensors_read[5]).count() == 0:
+            sensor_module.accel_default_x = instance.accel_x
+            sensor_module.accel_default_y = instance.accel_y 
+            sensor_module.accel_default_z = instance.accel_z
+            sensor_module.save()
     return redirect('index')
 
 def send_command(request):
