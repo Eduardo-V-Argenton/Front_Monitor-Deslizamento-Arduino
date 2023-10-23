@@ -9,7 +9,7 @@
             flex-wrap: wrap; /* Adicione flex-wrap para permitir que as caixas quebrem para a próxima linha em telas menores */
             justify-content: center; /* Centralize horizontalmente */
             align-items: flex-start; /* Alinhe no início verticalmente */
-            margin-top: 50px;
+            margin-top: 90px;
         }
 
         /* Estilize as caixas dos sensores */
@@ -47,7 +47,7 @@
 
         /* Estilize o possível risco */
         .info-risco {
-            font-size: 14.4px; /* Aumente o tamanho da fonte em 20% */
+            font-size: 17px; /* Aumente o tamanho da fonte em 20% */
             color: #ff0000;
         }
 
@@ -94,25 +94,8 @@
         margin-top: 100px;
       }
 
-
-
     </style>
 
-    <div class="danger-level">
-
-            {% if IC >= 0.75 %}
-                {% if last_values.accel_x <= 0.1 or last_values.accel_y <= 0.1 or last_values.accel_z <= 0.1 and last_values.rain_sensor_value > 2999 %}
-                    <h1>NÃO APRESENTA RISCOS</h1>
-                {% endif %}
-            {% elif IC >= 0.4 and IC < 0.75 %}
-                {% if last_values.accel_x <= 0.4 or last_values.accel_y <= 0.4 or last_values.accel_z <= 0.4 and last_values.rain_sensor_value <= 2999 %}
-                    <h1>ATENÇÃO</h1>
-                {% endif %}
-            {% else %}
-                <h1>RISCO DE DESLIZAMENTO!</h1>
-            {% endif %}
-
-    </div>
 
     <div class="grid-container">
 
@@ -125,15 +108,22 @@
                     <a class="box-button" href="{% url 'calibrate' id %}">CALIBRAÇÃO</a>
              </div>
 
-            {% comment %} <p class="info-title">:</p> {% endcomment %}
+            <br>
             <p class="info-value" id="SOILMOSTURE">{{ last_values.soil_moisture }}%</p>
-            <p class="info-title">LC, LP, LL:</p>
-            <span class="info-value-ID" id="LC">{{ lc }}</span>
-            <span class="info-value-ID" id="LP">{{ lp }}</span>
-            <span class="info-value-ID" id="LL">{{ ll }}</span>
+            <p class="info-risco" style= "color:black;">Índice de Consistência: {{ ic }}</p>
+            {% if ic < 0 %}
+                <p class="info-risco" style= "color:wine;">Muito Mole</p>
+            {% elif ic > 0 and ic < 0.5 %}
+                <p class="info-risco" style= "color:black;">Mole</p>
+            {% elif ic >= 0.5 and ic < 0.75 %}
+                <p class="info-risco" style= "color:black;">Média</p>
+            {% elif ic >= 0.75 and ic < 1 %}
+                <p class="info-risco" style= "color:black;">Rija</p>
+            {% elif ic > 1 %}
+                <p class="info-risco" style= "color:black;">Dura</p>
+            {% endif %}
 
 
-            <p class="info-risco">Valor IC: {{ ic }}</p>
 
             <canvas class="sensor-chart" id="umidade-solo-chart" width="200" height="100"></canvas>
         </div>
@@ -165,15 +155,15 @@
             <p class="info-title">Valor:</p>
             <p class="info-value">{{ last_values.air_temperature }}°C</p>
             <p class="info-risco" style="{% if last_values.air_temperature >= 1 and last_values.air_temperature <= 9 %} color: blue; {% elif last_values.air_temperature >= 10 and last_values.air_temperature <= 19 %} color: lightblue; {% elif last_values.air_temperature >= 20 and last_values.air_temperature <= 25 %} color: green; {% elif last_values.air_temperature >= 26 and last_values.air_temperature <= 31 %} color: orange; {% elif last_values.air_temperature >= 32 and last_values.air_temperature <= 40 %} color: red; {% endif %}">
-                {% if last_values.air_temperature >= 1 and last_values.air_temperature <= 9 %}
+                {% if last_values.air_temperature >= 1 and last_values.air_temperature < 10 %}
                     Frio extremo
-                {% elif last_values.air_temperature >= 10 and last_values.air_temperature <= 19 %}
+                {% elif last_values.air_temperature >= 10 and last_values.air_temperature < 20 %}
                     Frio
-                {% elif last_values.air_temperature >= 20 and last_values.air_temperature <= 25 %}
+                {% elif last_values.air_temperature >= 20 and last_values.air_temperature < 26 %}
                     Temperatura ambiente
-                {% elif last_values.air_temperature >= 26 and last_values.air_temperature <= 31 %}
+                {% elif last_values.air_temperature >= 26 and last_values.air_temperature < 32 %}
                     Calor
-                {% elif last_values.air_temperature >= 32 and last_values.air_temperature <= 40 %}
+                {% elif last_values.air_temperature >= 32 and last_values.air_temperature < 40 %}
                     Calor extremo
                 {% else %}
                     Valor de risco
@@ -198,10 +188,10 @@
             <p class="info-title">Valor:</p>
             <p class="info-value">{{ last_values.air_humidity }}%</p>            
 
-            <p class="info-risco" style="{% if last_values.air_humidity >= 0 and last_values.air_humidity <= 20 %}
-                color: brown; {% elif last_values.air_humidity >= 21 and last_values.air_humidity <= 40 %}
-                color: gold; {% elif last_values.air_humidity >= 41 and last_values.air_humidity <= 60 %}
-                color: blue; {% elif last_values.air_humidity >= 61 and last_values.air_humidity <= 80 %}
+            <p class="info-risco" style="{% if last_values.air_humidity >= 0 and last_values.air_humidity < 21 %}
+                color: brown; {% elif last_values.air_humidity >= 21 and last_values.air_humidity < 41 %}
+                color: gold; {% elif last_values.air_humidity >= 41 and last_values.air_humidity < 61 %}
+                color: blue; {% elif last_values.air_humidity >= 61 and last_values.air_humidity < 81 %}
                 color: wine; {% elif last_values.air_humidity >= 81 and last_values.air_humidity <= 100 %}
                 color: dark-red; {% endif %}">
                 {% if last_values.air_humidity >= 0 and last_values.air_humidity <= 20 %}
